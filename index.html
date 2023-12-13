@@ -1,44 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
-    <title>Axios Crash Course</title>
-  </head>
-  <body>
-    <div class="container my-5">
-      <div class="text-center">
-        <h1 class="display-4 text-center mb-3">Axios Crash Course</h1>
-        <button class="btn btn-primary my-3" id="get">GET</button>
-        <button class="btn btn-info" id="post">POST</button>
-        <button class="btn btn-warning" id="update">PUT/PATCH</button>
-        <button class="btn btn-danger" id="delete">DELETE</button>
-        <button class="btn btn-secondary" id="sim">Sim Requests</button>
-        <button class="btn btn-secondary" id="headers">
-          Custom Headers
-        </button>
-        <button class="btn btn-secondary" id="transform">
-          Transform
-        </button>
-        <button class="btn btn-secondary" id="error">
-          Error Handling
-        </button>
-        <button class="btn btn-secondary" id="cancel">
-          Cancel
-        </button>
-      </div>
-      <hr />
-      <div id="res"></div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
-    <script src="main.js"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking_Form</title>
+</head>
+<body>
+    <form id="addForm" onsubmit="saveToLocalStorage(event)">
+        <label>Name:</label>
+        <input type="text" id="item1" name="name">
+        <label>EmailId:</label>
+        <input type="email" id="item2" name="email">
+        <label>Phone Number</label>
+        <input type="tel" id="item3" name="phone">
+        <input type="submit" value="submit">
+    </form>
+    <h3>Booking_Details</h3>
+    <ul id="items"></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <script>
+        function saveToLocalStorage(event){
+          event.preventDefault();
+          const name = event.target.name.value;
+          const email = event.target.email.value;
+          const phone = event.target.phone.value;
+          const Data={
+            name,
+            email,
+            phone
+          };
+          axios.post("https://crudcrud.com/api/9f59814634cc4b9ba3af8531b5425250/appointmentData", Data)
+            .then((response) => {
+                showOnScreen(response.data)
+                console.log(response)
+            })
+            .catch((err) => {
+                document.body.innerHTML = document.body.innerHTML + "<h4>Something went wrong </h4>"
+                console.log(err)
+            })
+          //localStorage.setItem(Data.email,JSON.stringify(Data));
+          //showOnScreen(Data);
+        }
+        function showOnScreen(Data){
+          const parentElement = document.getElementById('items');
+          const childElement = document.createElement('li');
+          childElement.textContent = Data.name + ':' + Data.email + ':' + Data.phone;
+    
+          const deleteBtn = document.createElement('input');
+          deleteBtn.type = "button";
+          deleteBtn.value = 'Delete';
+    
+          const editBtn = document.createElement('input');
+          editBtn.type = "button";
+          editBtn.value = 'Edit';
+    
+          deleteBtn.onclick = () => {
+            localStorage.removeItem(Data.email);
+            parentElement.removeChild(childElement);
+            parentElement.removeChild(deleteBtn);
+            parentElement.removeChild(editBtn);
+          }
+    
+          editBtn.onclick = () => {
+            localStorage.removeItem(Data.email);
+            parentElement.removeChild(childElement);
+            parentElement.removeChild(deleteBtn);
+            parentElement.removeChild(editBtn);
+            document.getElementById('item1').value=Data.amount;
+            document.getElementById('item2').value=Data.description;
+            document.getElementById('item3').value=Data.category;
+          }
+    
+          parentElement.appendChild(childElement);
+          parentElement.appendChild(deleteBtn);
+          parentElement.appendChild(editBtn);
+        }
+      </script>
+</body>
 </html>
