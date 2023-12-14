@@ -41,6 +41,19 @@
           //localStorage.setItem(Data.email,JSON.stringify(Data));
           //showOnScreen(Data);
         }
+        window.addEventListener("DOMContentLoaded", () => {
+          axios.get("https://crudcrud.com/api/9f59814634cc4b9ba3af8531b5425250/appointmentData")
+            .then((response) => {
+              console.log(response)
+
+              for(var i=0;i<response.data.length;i++){
+                showOnScreen(response.data[i])
+              }
+            })
+            .catch((error) => {
+              console.log(error)
+            })
+        })
         function showOnScreen(Data){
           const parentElement = document.getElementById('items');
           const childElement = document.createElement('li');
