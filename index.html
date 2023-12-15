@@ -68,10 +68,16 @@
           editBtn.value = 'Edit';
     
           deleteBtn.onclick = () => {
-            localStorage.removeItem(Data.email);
-            parentElement.removeChild(childElement);
-            parentElement.removeChild(deleteBtn);
-            parentElement.removeChild(editBtn);
+            axios.delete(`https://crudcrud.com/api/9f59814634cc4b9ba3af8531b5425250/appointmentData/${Data._id}`)
+              .then((response) => {
+                parentElement.removeChild(childElement);
+                parentElement.removeChild(deleteBtn);
+                parentElement.removeChild(editBtn);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+            //localStorage.removeItem(Data.email);
           }
     
           editBtn.onclick = () => {
