@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking_Form</title>
+</head>
+<body>
+    <form id="addForm" onsubmit="saveToLocalStorage(event)">
+        <label>Name:</label>
+        <input type="text" id="item1" name="name">
+        <label>EmailId:</label>
+        <input type="email" id="item2" name="email">
+        <label>Phone Number</label>
+        <input type="tel" id="item3" name="phone">
+        <input type="hidden" id="editItemId" name="itemId">
+        <input type="submit" value="submit">
+    </form>
+    <h3>Booking_Details</h3>
+    <ul id="items"></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <script>
+        function saveToLocalStorage(event){
+          event.preventDefault();
+          const name = event.target.name.value;
+          const email = event.target.email.value;
+          const phone = event.target.phone.value;
+          const itemId = event.target.itemId.value;
+
+          if (itemId) {
+            // If itemId exists, perform an update (PUT) operation
+            const Data = { name, email, phone };
+            axios.put(`https://crudcrud.com/api/9f59814634cc4b9ba3af8531b5425250/appointmentData/${itemId}`, Data)
+              .then((response) => {
+                console.log(response);
+                updateOnScreen(response.data);
+                event.target.reset(); // Clear the form fields after submission
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } else {
+            // If itemId doesn't exist, perform a create (POST) operation
+            const Data = { name, email, phone };
+            axios.post("https://crudcrud.com/api/9f59814634cc4b9ba3af8531b5425250/appointmentData", Data)
+              .then((response) => {
+                console.log(response);
+                showOnScreen(response.data);
+                event.target.reset(); // Clear the form fields after submission
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+          axios.get("https://crudcrud.com/api/9f59814634cc4b9ba3af8531b5425250/appointmentData")
+            .then((response) => {
+              console.log(response);
+
+              for(var i=0;i<response.data.length;i++){
+                showOnScreen(response.data[i]);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+
+        function showOnScreen(Data){
+          const parentElement = document.getElementById('items');
+          const childElement = document.createElement('li');
+          childElement.textContent = Data.name + ':' + Data.email + ':' + Data.phone;
+
+          const deleteBtn = document.createElement('input');
+          deleteBtn.type = "button";
+          deleteBtn.value = 'Delete';
+
+          const editBtn = document.createElement('input');
+          editBtn.type = "button";
+          editBtn.value = 'Edit';
+
+          deleteBtn.onclick = () => {
+            axios.delete(`https://crudcrud.com/api/9f59814634cc4b9ba3af8531b5425250/appointmentData/${Data._id}`)
+              .then((response) => {
+                parentElement.removeChild(childElement);
+                parentElement.removeChild(deleteBtn);
+                parentElement.removeChild(editBtn);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+
+          editBtn.onclick = () => {
+            document.getElementById('item1').value = Data.name;
+            document.getElementById('item2').value = Data.email;
+            document.getElementById('item3').value = Data.phone;
+            document.getElementById('editItemId').value = Data._id;
+          }
+
+          parentElement.appendChild(childElement);
+          parentElement.appendChild(deleteBtn);
+          parentElement.appendChild(editBtn);
+        }
+
+        function updateOnScreen(Data){
+          const parentElement = document.getElementById('items');
+          const items = parentElement.getElementsByTagName('li');
+
+          for (let i = 0; i < items.length; i++) {
+            const itemText = items[i].textContent;
+            if (itemText.startsWith(Data.name)) {
+              items[i].textContent = Data.name + ':' + Data.email + ':' + Data.phone;
+              break;
+            }
+          }
+        }
+    </script>
+</body>
+</html>
